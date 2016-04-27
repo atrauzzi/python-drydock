@@ -1,0 +1,53 @@
+version: '2'
+
+services:
+
+  # https://hub.docker.com/_/redis
+  cache:
+    image: redis:alpine
+    container_name: drydock-cache
+
+    command: "--appendonly yes"
+
+    ports:
+      - "6379"
+
+    volumes:
+      - ./state/cache:/data
+
+
+  # https://hub.docker.com/r/mdillon/postgis
+  database:
+    image: mdillon/postgis
+    container_name: drydock-database
+
+    ports:
+      - "5432"
+
+    environment:
+      POSTGRES_USER: drydock
+      POSTGRES_PASSWORD: drydock
+      POSTGRES_DB: drydock
+
+    volumes:
+      - ./state/database:/var/lib/postgresql/data
+
+
+  # https://hub.docker.com/r/djfarrelly/maildev
+  email:
+    image: djfarrelly/maildev
+    container_name: drydock-email
+
+    ports:
+      - "8082:80"
+
+  #  ____________________________________________________________________________________________________________
+  # |____________________________________________________________________________________________________________|
+
+  cli:
+    build: .
+
+    volumes:
+      - ./app:/drydock/app
+      - ./state/virtualenv:/drydock/virtualenv
+      - ./resources/entrypoint.sh:/usr/local/bin/entrypoint.sh

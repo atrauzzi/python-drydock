@@ -1,0 +1,20 @@
+#!/bin/bash
+
+UID_FLAG="-u $UID"
+
+case "$OSTYPE" in
+    darwin*)
+      echo "Hey OSX user!"
+      echo "Please open a github ticket if you notice any files being created as root, or encounter issues!"
+    ;;
+    msys)
+      echo "I'm revisiting all Windows bash support.  Want to try the ps1 script?"
+      exit
+    ;;
+esac
+
+docker-compose run \
+    --rm \
+    $UID_FLAG \
+    --entrypoint entrypoint.sh \
+    cli ${@:1}
